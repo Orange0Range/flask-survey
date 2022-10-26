@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, flash
+from flask import Flask, request, render_template, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 from surveys import satisfaction_survey
 app = Flask(__name__)
@@ -32,6 +32,7 @@ def question(index):
 def answer():
     ans = request.form['ans']
     responses.append(ans)
+    session['responses'] = responses
     global ind
     global complete
     if ind == (len(satisfaction_survey.questions)-1):
@@ -42,3 +43,8 @@ def answer():
         ind +=1
         next = f'/questions/{ind}'
     return redirect(next)
+
+@app.route('/init', methods = ['POST'])
+def init():
+    session['responses'] = []
+    return redirect('/questions/0')
